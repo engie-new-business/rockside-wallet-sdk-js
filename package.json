@@ -1,0 +1,26 @@
+{
+  "name": "rockside-sdk-wallet",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "author": "rockside",
+  "devDependencies": {
+    "@types/jest": "^25.1.2",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.0",
+    "typescript": "^3.7.5"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@types/node": "^13.7.0",
+    "bip39": "^3.0.2",
+    "eth-sig-util": "^2.5.2",
+    "ethereumjs-util": "^6.2.0",
+    "ethereumjs-wallet": "^0.6.3"
+  },
+  "files": [
+    "lib/**/*"
+  ]
+}
