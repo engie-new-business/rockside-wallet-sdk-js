@@ -1,15 +1,15 @@
-import { Wallet } from '../src/wallet';
+import { BaseWallet } from '../src/wallet';
 
 describe('wallet', () => {
   it('should create a random private key', () => {
-    const wallet = Wallet.createRandom();
+    const wallet = BaseWallet.createRandom();
 
     expect(wallet.getWords().split(' ')).toHaveLength(12);
   });
 
   it('should recover existing key', () => {
     const words = 'glove dial front cost prefer habit scrap kid title mercy nuclear tortoise reflect jazz maze';
-    const wallet = Wallet.recoverFromMnemonic(words);
+    const wallet = new BaseWallet(words);
 
     expect(wallet.getAddress()).toEqual('0x6f32e2588C7C2Ab80ceCf49562CAD748409dCBa7');
     expect(wallet.getPrivateKey().toString('hex')).toEqual('bb8e31c72ca8e73d7875e6f4c7e32a5cae14327bada7de5db68360ab40b14c2e');

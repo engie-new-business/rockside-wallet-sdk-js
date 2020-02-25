@@ -1,11 +1,10 @@
 /// <reference types="node" />
-export declare class Wallet {
-    static createRandom(): Wallet;
-    static recoverFromMnemonic(words: string): Wallet;
+export declare class BaseWallet {
+    static createRandom(): BaseWallet;
     private words;
     private hdwallet;
     private wallet;
-    constructor(hdwallet: any, words: string);
+    constructor(words: string);
     getAddress(): string;
     getPrivateKey(): Buffer;
     getPublicKey(): Buffer;

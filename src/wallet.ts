@@ -4,25 +4,20 @@ import { ecsign, toRpcSig } from 'ethereumjs-util';
 
 const EthereumPath = "m/44'/60'/0'/0/0";
 
-export class Wallet {
-  static createRandom(): Wallet {
+export class BaseWallet {
+  static createRandom(): BaseWallet {
     const words = bip39.generateMnemonic();
-    return Wallet.recoverFromMnemonic(words)
+    return new BaseWallet(words)
   };
-
-  static recoverFromMnemonic(words: string): Wallet {
-    const hdwallet = hdkey.fromMasterSeed(words);
-    return new Wallet(hdwallet, words);
-  }
 
   private words: string;
   private hdwallet: any;
   private wallet: any;
 
-  constructor(hdwallet: any, words: string) {
-    this.words = words; 
-    this.hdwallet = hdwallet;
-    this.wallet = hdwallet.derivePath(EthereumPath).getWallet();
+  constructor(words: string) {
+    this.words = words;
+    this.hdwallet = hdkey.fromMasterSeed(words);
+    this.wallet = this.hdwallet.derivePath(EthereumPath).getWallet();
   }
 
   getAddress(): string {

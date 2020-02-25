@@ -1,6 +1,21 @@
 import * as hasher from '../src/hash';
 
 describe('executeMessageHash', () => {
+  it('should return the correct hash', () => {
+    const hash = hasher.executeMessageHash(
+      { chainId: 3, verifyingContract: '0x3711d4b720577f0f5887989AaE5e26263Ed92999' },
+      {
+        signer: '0x502fce03af4bfd3dc991a6f7d0523cb920e1dbc8',
+        to: '0x87ae49b6ffd2ea714fb08710ce5ccda5e490e07b',
+        value: 0,
+        nonce: 0,
+        data: '0x4b9f5c980000000000000000000000000000000000000000000000000000000000000001',
+      }
+    );
+
+    expect(hash.toString('hex')).toEqual('d796c272a69dfa572dcdaac9f0baf24c74ca4a00a5667a806695dd2693453e5f');
+  });
+
   it('should return the correct hash for the execute transaction', () => {
     const hash = hasher.executeMessageHash(
       { chainId: 3, verifyingContract: '0xDb45eAB135582c7e7852a8E890B4495c9C1D822d' },
