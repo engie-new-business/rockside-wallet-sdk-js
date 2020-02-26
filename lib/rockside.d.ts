@@ -1,15 +1,24 @@
-import { RocksideApiOpts } from './api';
-export interface Wallet {
-    getAddress(): string;
-    sign(message: ArrayBuffer): Promise<string>;
-}
-export declare type RocksideOpts = {
-    baseUrl?: string;
-} & RocksideApiOpts;
+import { Wallet } from './wallet';
+import { RocksideApi, RocksideApiOpts, RocksideNetwork } from './api';
+export declare type RocksideOpts = {} & RocksideApiOpts;
+export declare const ROPSTEN: RocksideNetwork;
+export declare const MAINNET: RocksideNetwork;
+export declare type Transaction = {
+    to: string;
+    value: number;
+    data: ArrayBuffer;
+};
 export declare class Rockside {
     private readonly opts;
-    private api;
+    readonly api: RocksideApi;
     constructor(opts: RocksideOpts);
     createEncryptedWallet(username: string, password: string): Promise<Wallet>;
     connectEncryptedWallet(username: string, password: string): Promise<Wallet>;
+    private hasExistingIdentityStored;
+    private storeIdentity;
+    deployIdentity(address: string): Promise<{
+        address: string;
+        txHash?: string;
+    }>;
+    relayTransaction(signer: Wallet, identity: string, tx: Transaction): Promise<string>;
 }

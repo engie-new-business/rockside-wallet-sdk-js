@@ -4,7 +4,12 @@ import { ecsign, toRpcSig } from 'ethereumjs-util';
 
 const EthereumPath = "m/44'/60'/0'/0/0";
 
-export class BaseWallet {
+export interface Wallet {
+  getAddress(): string
+  sign(message: ArrayBuffer): Promise<string>
+}
+
+export class BaseWallet implements Wallet {
   static createRandom(): BaseWallet {
     const words = bip39.generateMnemonic();
     return new BaseWallet(words)

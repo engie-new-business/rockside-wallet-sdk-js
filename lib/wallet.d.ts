@@ -1,5 +1,9 @@
 /// <reference types="node" />
-export declare class BaseWallet {
+export interface Wallet {
+    getAddress(): string;
+    sign(message: ArrayBuffer): Promise<string>;
+}
+export declare class BaseWallet implements Wallet {
     static createRandom(): BaseWallet;
     private words;
     private hdwallet;

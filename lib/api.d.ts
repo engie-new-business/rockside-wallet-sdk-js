@@ -1,6 +1,15 @@
+export declare type RocksideNetwork = [3, 'ropsten'] | [1, 'mainnet'];
 export declare type RocksideApiOpts = {
     baseUrl: string;
     token: string;
+    network: RocksideNetwork;
+};
+export declare type ExecuteTransaction = {
+    from: string;
+    to: string;
+    value: number;
+    data: ArrayBuffer;
+    signature: string;
 };
 export declare type EncryptedAccount = {
     username: string;
@@ -26,4 +35,11 @@ export declare class RocksideApi {
     }>;
     createEncryptedWallet(account: EncryptedAccount, wallet: EncryptedWallet): Promise<void>;
     getEncryptedWallets(username: string, passwordHash: ArrayBuffer): Promise<Array<EncryptedWallet>>;
+    deployIdentityContract(address: string): Promise<{
+        address: string;
+        txHash: string;
+    }>;
+    getRelayNonce(identity: string, account: string): Promise<number>;
+    relayTransaction(identity: string, tx: ExecuteTransaction): Promise<string>;
+    getRpcUrl(): string;
 }

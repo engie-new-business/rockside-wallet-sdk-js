@@ -1,16 +1,18 @@
-import { BaseWallet } from './wallet';
+import { Wallet, BaseWallet } from './wallet';
+import { executeMessageHash } from './hash';
 import * as cryptolib from './crypto';
-import { RocksideApi, RocksideApiOpts } from './api';
+import { RocksideApi, RocksideApiOpts, RocksideNetwork } from './api';
 
-export interface Wallet {
-  getAddress(): string
-  sign(message: ArrayBuffer): Promise<string>
+export type RocksideOpts = {} & RocksideApiOpts;
+
+export const ROPSTEN: RocksideNetwork = [3, 'ropsten'];
+export const MAINNET: RocksideNetwork = [1, 'mainnet'];
+
+export type Transaction = {
+  to: string,
+  value: number,
+  data: ArrayBuffer,
 }
-
-
-export type RocksideOpts = {
-  baseUrl?: string
-} & RocksideApiOpts;
 
 const defaultOpts = {
   baseUrl: 'https://api.rockside.io',
@@ -18,7 +20,7 @@ const defaultOpts = {
 
 export class Rockside {
   private readonly opts: RocksideOpts;
-  private api: RocksideApi
+  public readonly api: RocksideApi
 
   constructor(opts: RocksideOpts) {
     this.opts = Object.assign({}, defaultOpts, opts);
@@ -86,6 +88,50 @@ export class Rockside {
     );
 
     return new BaseWallet(_decodeUTF8(mnemonic));
+  }
+
+  private hasExistingIdentityStored(address: string): string|null {
+    if (!window.localStorage) return null;
+
+    return window.localStorage.getItem(`id-${address.toLowerCase()}`);
+  }
+
+  private storeIdentity(address: string, identity: string) {
+    if (!window.localStorage) return;
+
+    window.localStorage.setItem(`id-${address.toLowerCase()}`, identity);
+  }
+
+  async deployIdentity(address: string): Promise<{ address: string, txHash?: string }> {
+    const existingIdentity = this.hasExistingIdentityStored(address);
+    if (!!existingIdentity) return { address: existingIdentity };
+
+    const identity = await this.api.deployIdentityContract(address);
+    this.storeIdentity(address, identity.address);
+    return identity;
+  }
+
+  async relayTransaction(signer: Wallet, identity: string, tx: Transaction): Promise<string> {
+    const address = signer.getAddress();
+    const domain = { chainId: this.opts.network[0], verifyingContract: identity };
+    const message = {
+      signer: address,
+      to: tx.to,
+      value: tx.value,
+      data: tx.data,
+      nonce: await this.api.getRelayNonce(identity, address),
+    };
+    const hash = executeMessageHash(domain, {
+      ...message,
+      data: '0x'+Buffer.from(message.data).toString('hex'),
+    });
+    const signature = await signer.sign(hash);
+
+    return this.api.relayTransaction(identity, {
+      ...tx,
+      from: signer.getAddress(),
+      signature,
+    });
   }
 }
 

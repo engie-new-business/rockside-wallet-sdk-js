@@ -1,6 +1,19 @@
+import { Wallet } from './wallet';
+
+export type RocksideNetwork = [3, 'ropsten'] | [1, 'mainnet'];
+
 export type RocksideApiOpts = {
   baseUrl: string,
   token: string,
+  network: RocksideNetwork;
+};
+
+export type ExecuteTransaction = {
+  from: string,
+  to: string,
+  value: number,
+  data: ArrayBuffer,
+  signature: string,
 };
 
 export type EncryptedAccount = {
@@ -98,6 +111,55 @@ export class RocksideApi {
     }));
 
     return wallets;
+  }
+
+  async deployIdentityContract(address: string): Promise<{ address: string, txHash: string }> {
+    const route = `/ethereum/${this.opts.network[1]}/contracts/relayableidentity`;
+    const resp = await this.send(route, 'POST', { account: address });
+
+    if (resp.status != 201) {
+      throw this.extractError(resp);
+    }
+
+    const json = await resp.json();
+
+    return { address: json['address'], txHash: json['transaction_hash'] };
+  }
+
+  async getRelayNonce(identity: string, account: string): Promise<number> {
+    const route = `/ethereum/${this.opts.network[1]}/contracts/relayableidentity/${identity}/nonce`;
+    const resp = await this.send(route, 'POST', { account });
+
+    if (resp.status != 200) {
+      throw this.extractError(resp);
+    }
+
+    const json = await resp.json();
+
+    return Number(json['nonce']);
+  }
+
+  async relayTransaction(identity: string, tx: ExecuteTransaction): Promise<string> {
+    const route = `/ethereum/${this.opts.network[1]}/contracts/relayableidentity/${identity}/relayExecute`;
+    const resp = await this.send(route, 'POST', {
+      from: tx.from,
+      to: tx.to,
+      value: `0x${tx.value.toString(16)}`,
+      data: buf2hex(tx.data),
+      signature: tx.signature,
+    });
+
+    if (resp.status != 200) {
+      throw this.extractError(resp);
+    }
+
+    const json = await resp.json();
+
+    return json['transaction_hash'];
+  }
+
+  getRpcUrl(): string {
+    return `${this.opts.baseUrl}/ethereum/${this.opts.network[1]}/jsonrpc?token=${this.opts.token}`
   }
 }
 
