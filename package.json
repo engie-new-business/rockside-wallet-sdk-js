@@ -16,9 +16,11 @@
   "dependencies": {
     "@types/node": "^13.7.0",
     "bip39": "^3.0.2",
+    "eth-json-rpc-middleware": "^4.4.1",
     "eth-sig-util": "^2.5.2",
     "ethereumjs-util": "^6.2.0",
-    "ethereumjs-wallet": "^0.6.3"
+    "ethereumjs-wallet": "^0.6.3",
+    "json-rpc-engine": "^5.1.8"
   },
   "files": [
     "lib/**/*"

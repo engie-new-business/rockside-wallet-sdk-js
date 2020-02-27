@@ -1,4 +1,5 @@
 import { Wallet, BaseWallet } from './wallet';
+import { Provider } from './provider';
 import { executeMessageHash } from './hash';
 import * as cryptolib from './crypto';
 import { RocksideApi, RocksideApiOpts, RocksideNetwork } from './api';
@@ -25,6 +26,10 @@ export class Rockside {
   constructor(opts: RocksideOpts) {
     this.opts = Object.assign({}, defaultOpts, opts);
     this.api = new RocksideApi(this.opts);
+  }
+
+  getProvider(wallet ?: Wallet, identity ?: string): Provider {
+    return new Provider(this, wallet, identity);
   }
 
   async createEncryptedWallet(username: string, password: string): Promise<Wallet> {
