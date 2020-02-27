@@ -1,4 +1,5 @@
 import { Wallet } from './wallet';
+import { Provider } from './provider';
 import { RocksideApi, RocksideApiOpts, RocksideNetwork } from './api';
 export declare type RocksideOpts = {} & RocksideApiOpts;
 export declare const ROPSTEN: RocksideNetwork;
@@ -12,6 +13,7 @@ export declare class Rockside {
     private readonly opts;
     readonly api: RocksideApi;
     constructor(opts: RocksideOpts);
+    getProvider(wallet?: Wallet, identity?: string): Provider;
     createEncryptedWallet(username: string, password: string): Promise<Wallet>;
     connectEncryptedWallet(username: string, password: string): Promise<Wallet>;
     private hasExistingIdentityStored;
