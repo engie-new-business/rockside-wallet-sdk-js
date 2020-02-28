@@ -1,5 +1,7 @@
 # rockside-sdk-wallet
 
+[![npm logo](https://nodei.co/npm/@rocksideio/rockside-wallet-sdk.png?mini=true)](https://www.npmjs.com/package/@rocksideio/rockside-wallet-sdk)
+
 The Rockside Wallet SDK helps implementing a Wallet and integrating it with Rockside by providing following APIs :
 * Create a HD wallet, handle recovery and signing
 * Create a Rockside meta transaction signature
