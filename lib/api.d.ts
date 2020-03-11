@@ -42,4 +42,5 @@ export declare class RocksideApi {
     getRelayNonce(identity: string, account: string): Promise<number>;
     relayTransaction(identity: string, tx: ExecuteTransaction): Promise<string>;
     getRpcUrl(): string;
+    getToken(): string;
 }

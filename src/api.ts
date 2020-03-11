@@ -43,10 +43,13 @@ export class RocksideApi {
   }
 
   private async send(route: string, method: string, body: object): Promise<Response> {
-    const url = `${this.opts.baseUrl}${route}?token=${this.opts.token}`;
+    const url = `${this.opts.baseUrl}${route}`;
     return await fetch(url, {
       method,
       body: JSON.stringify(body),
+      headers: {
+        "Authorization": "Bearer " + this.opts.token,
+      },
     });
   }
 
@@ -159,7 +162,11 @@ export class RocksideApi {
   }
 
   getRpcUrl(): string {
-    return `${this.opts.baseUrl}/ethereum/${this.opts.network[1]}/jsonrpc?token=${this.opts.token}`
+    return `${this.opts.baseUrl}/ethereum/${this.opts.network[1]}/jsonrpc`
+  }
+
+  getToken(): string {
+    return this.opts.token
   }
 }
 
