@@ -28,7 +28,11 @@ export class Rockside {
     this.api = new RocksideApi(this.opts);
   }
 
-  getProvider(wallet ?: Wallet, identity ?: string): Provider {
+  getProvider(): Provider {
+    return new Provider(this, null, null);
+  }
+
+  getWalletProvider(wallet: Wallet, identity: string): Provider {
     return new Provider(this, wallet, identity);
   }
 

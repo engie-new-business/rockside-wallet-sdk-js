@@ -30,6 +30,11 @@ export type EncryptedWallet = {
   encryptedMnemonicIV: ArrayBuffer,
 };
 
+export type IdentityResponse = {
+  address: string,
+  transactionHash: string,
+};
+
 export class RocksideApi {
   private readonly opts: RocksideApiOpts;
 
@@ -46,11 +51,36 @@ export class RocksideApi {
     const url = `${this.opts.baseUrl}${route}`;
     return await fetch(url, {
       method,
-      body: JSON.stringify(body),
+      body: !!body ? JSON.stringify(body) : null,
       headers: {
         "Authorization": "Bearer " + this.opts.token,
       },
     });
+  }
+
+  async getIdentities(): Promise<string[]> {
+    const resp = await this.send(`/ethereum/${this.opts.network[1]}/identities`, 'GET', null);
+
+    if (resp.status != 200) {
+      throw this.extractError(resp);
+    }
+
+    const json = await resp.json();
+    return json as string[];
+  }
+
+  async createIdentity(): Promise<IdentityResponse> {
+    const resp = await this.send(`/ethereum/${this.opts.network[1]}/identities`, 'POST', {});
+
+    if (resp.status != 201) {
+      throw this.extractError(resp);
+    }
+
+    const json = await resp.json();
+    return {
+      address: json.address,
+      transactionHash: json.transaction_hash,
+    };
   }
 
   async createEncryptedAccount(account: EncryptedAccount) {

@@ -13,7 +13,8 @@ export declare class Rockside {
     private readonly opts;
     readonly api: RocksideApi;
     constructor(opts: RocksideOpts);
-    getProvider(wallet?: Wallet, identity?: string): Provider;
+    getProvider(): Provider;
+    getWalletProvider(wallet: Wallet, identity: string): Provider;
     createEncryptedWallet(username: string, password: string): Promise<Wallet>;
     connectEncryptedWallet(username: string, password: string): Promise<Wallet>;
     private hasExistingIdentityStored;

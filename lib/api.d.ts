@@ -23,11 +23,17 @@ export declare type EncryptedWallet = {
     encryptedMnemonic: ArrayBuffer;
     encryptedMnemonicIV: ArrayBuffer;
 };
+export declare type IdentityResponse = {
+    address: string;
+    transactionHash: string;
+};
 export declare class RocksideApi {
     private readonly opts;
     constructor(opts: RocksideApiOpts);
     private extractError;
     private send;
+    getIdentities(): Promise<string[]>;
+    createIdentity(): Promise<IdentityResponse>;
     createEncryptedAccount(account: EncryptedAccount): Promise<void>;
     connectEncryptedAccount(username: string, passwordHash: ArrayBuffer): Promise<{
         data: ArrayBuffer;

@@ -24,7 +24,7 @@ const rockside = new Rockside({ token: 'MY_TOKEN' });
 
 const wallet = await rockside.connectEncryptedWallet('username', 'password');
 const identity = await rockside.deployIdentity(wallet.getAddress());
-const provider = rockside.getProvider(wallet, identity.address);
+const provider = rockside.getWalletProvider(wallet, identity.address);
 const web3 = new Web3(provider as any);
 
 const erc20 = new web3.eth.Contract(JSON.parse(erc20ABI), erc20Address);

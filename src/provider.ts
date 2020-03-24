@@ -1,5 +1,6 @@
 import { Wallet } from './wallet';
 import { Rockside } from './rockside';
+import { executeMessageHash } from './hash';
 
 const RpcEngine = require('json-rpc-engine');
 const createWalletMiddleware = require('eth-json-rpc-middleware/wallet');
@@ -26,7 +27,20 @@ export class Provider {
 
     if (!!wallet && !!identity) {
       this.engine.push(createWalletMiddleware({
-        getAccounts: async (): Promise<string[]> => [identity],
+        getAccounts: async (): Promise<string[]> => [identity, wallet.getAddress()],
+
+        processTypedMessageV4: async (req: any): Promise<string> => {
+          const { data } = req;
+
+          const parsed = JSON.parse(data);
+          const hash = executeMessageHash(parsed.domain, parsed.message);
+          return await wallet.sign(hash);
+        },
+
+        processEthSignMessage: async (req: any): Promise<string> => {
+          const { data } = req;
+          return await wallet.sign(Buffer.from(data.substring(2), 'hex'));
+        },
 
         processTransaction: async (tx: any): Promise<string> => {
           const metatx = {
