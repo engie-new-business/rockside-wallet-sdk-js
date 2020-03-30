@@ -31,15 +31,34 @@ const erc20 = new web3.eth.Contract(JSON.parse(erc20ABI), erc20Address);
 const mybalance = await erc20.methods.balanceOf(identity.address).call();
 ```
 
-### Create an encrypted wallet using Rockside
+
+### Use eth_signTypedData_v4 to sign a meta transaction using Metamask
 
 ```typescript
-import { Rockside } from 'rockside-wallet-sdk';
-const rockside = new Rockside({ token: 'MY_TOKEN' });
+import { executeMessageTypedData } from 'rockside-wallet-sdk';
 
-const wallet: Wallet = await rockside.createEncryptedWallet('username', 'password');
+const signer = '0x0x6f32e2588C7C2Ab80ceCf49562CAD748409dCBa7';
+const domain = { chainId: 3, verifyingContract: '0x${IDENTITY_ADDRESS}' };
+const metatx = {
+  signer,
+  to: '0x6f32e2588C7C2Ab80ceCfFFFFFFFFFFFFFFFFFFF',
+  value: 0,
+  data: '0xabba',
+  nonce: 0,
+};
+const provider = window.ethereum;
 
-wallet.sign(...);
+const typedData = executeMessageTypedData(domain, metatx);
+const signature = await new Promise((resolve, reject) => {
+  provider.sendAsync({
+    method: 'eth_signTypedData_v4',
+    params: [signer, JSON.stringify(typedData)],
+    from: signer,
+  }, (err, result) => {
+    if (err) { return reject(err); }
+    return resolve(result.result);
+  });
+});
 ```
 
 ### Connect to an existing encrypted wallet using Rockside
@@ -73,33 +92,15 @@ const hash = executeMessageHash(domain, metatx);
 const signature = await wallet.sign(hash);
 ```
 
-### Use eth_signTypedData_v4 to sign a meta transaction using Metamask
+### Create an encrypted wallet using Rockside
 
 ```typescript
-import { executeMessageTypedData } from 'rockside-wallet-sdk';
+import { Rockside } from 'rockside-wallet-sdk';
+const rockside = new Rockside({ token: 'MY_TOKEN' });
 
-const signer = '0x0x6f32e2588C7C2Ab80ceCf49562CAD748409dCBa7';
-const domain = { chainId: 3, verifyingContract: '0x${IDENTITY_ADDRESS}' };
-const metatx = {
-  signer,
-  to: '0x6f32e2588C7C2Ab80ceCfFFFFFFFFFFFFFFFFFFF',
-  value: 0,
-  data: '0xabba',
-  nonce: 0,
-};
-const provider = window.ethereum;
+const wallet: Wallet = await rockside.createEncryptedWallet('username', 'password');
 
-const typedData = executeMessageTypedData(domain, metatx);
-const signature = await new Promise((resolve, reject) => {
-  provider.sendAsync({
-    method: 'eth_signTypedData_v4',
-    params: [signer, JSON.stringify(typedData)],
-    from: signer,
-  }, (err, result) => {
-    if (err) { return reject(err); }
-    return resolve(result.result);
-  });
-});
+wallet.sign(...);
 ```
 
 ## Run tests
