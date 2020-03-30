@@ -61,17 +61,6 @@ const signature = await new Promise((resolve, reject) => {
 });
 ```
 
-### Connect to an existing encrypted wallet using Rockside
-
-```typescript
-import { Rockside } from 'rockside-wallet-sdk';
-const rockside = new Rockside({ token: 'MY_TOKEN' });
-
-const wallet: Wallet = await rockside.connectEncryptedWallet('username', 'password');
-
-wallet.sign(...);
-```
-
 ### Generate a Wallet and sign a meta transaction
 
 ```typescript
@@ -99,6 +88,17 @@ import { Rockside } from 'rockside-wallet-sdk';
 const rockside = new Rockside({ token: 'MY_TOKEN' });
 
 const wallet: Wallet = await rockside.createEncryptedWallet('username', 'password');
+
+wallet.sign(...);
+```
+
+### Connect to an existing encrypted wallet using Rockside
+
+```typescript
+import { Rockside } from 'rockside-wallet-sdk';
+const rockside = new Rockside({ token: 'MY_TOKEN' });
+
+const wallet: Wallet = await rockside.connectEncryptedWallet('username', 'password');
 
 wallet.sign(...);
 ```
