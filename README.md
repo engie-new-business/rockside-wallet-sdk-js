@@ -1,4 +1,4 @@
-# rockside-sdk-wallet
+# rockside-wallet-sdk-js
 
 [![npm logo](https://nodei.co/npm/@rocksideio/rockside-wallet-sdk.png?mini=true)](https://www.npmjs.com/package/@rocksideio/rockside-wallet-sdk)
 
