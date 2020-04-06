@@ -62,7 +62,7 @@ export class RocksideApi {
     const resp = await this.send(`/ethereum/${this.opts.network[1]}/identities`, 'GET', null);
 
     if (resp.status != 200) {
-      throw this.extractError(resp);
+      throw await this.extractError(resp);
     }
 
     const json = await resp.json();
@@ -73,7 +73,7 @@ export class RocksideApi {
     const resp = await this.send(`/ethereum/${this.opts.network[1]}/identities`, 'POST', {});
 
     if (resp.status != 201) {
-      throw this.extractError(resp);
+      throw await this.extractError(resp);
     }
 
     const json = await resp.json();
@@ -94,7 +94,7 @@ export class RocksideApi {
     });
 
     if (resp.status != 201 && resp.status != 409) {
-      throw this.extractError(resp);
+      throw await this.extractError(resp);
     }
   }
 
@@ -104,7 +104,7 @@ export class RocksideApi {
       password_hash: buf2hex(passwordHash),
     });
     if (resp.status != 200) {
-      throw this.extractError(resp);
+      throw await this.extractError(resp);
     }
 
     const json = await resp.json()
@@ -123,7 +123,7 @@ export class RocksideApi {
       encrypted_mnemonic_iv: buf2hex(wallet.encryptedMnemonicIV),
     });
     if (resp.status != 201) {
-      throw this.extractError(resp);
+      throw await this.extractError(resp);
     }
   }
 
@@ -133,7 +133,7 @@ export class RocksideApi {
       password_hash: buf2hex(passwordHash),
     });
     if (resp.status != 200) {
-      throw this.extractError(resp);
+      throw await this.extractError(resp);
     }
 
     const json = await resp.json();
@@ -151,7 +151,7 @@ export class RocksideApi {
     const resp = await this.send(route, 'POST', { account: address });
 
     if (resp.status != 201) {
-      throw this.extractError(resp);
+      throw await this.extractError(resp);
     }
 
     const json = await resp.json();
@@ -164,7 +164,7 @@ export class RocksideApi {
     const resp = await this.send(route, 'POST', { account });
 
     if (resp.status != 200) {
-      throw this.extractError(resp);
+      throw await this.extractError(resp);
     }
 
     const json = await resp.json();
@@ -183,7 +183,7 @@ export class RocksideApi {
     });
 
     if (resp.status != 200) {
-      throw this.extractError(resp);
+      throw await this.extractError(resp);
     }
 
     const json = await resp.json();
