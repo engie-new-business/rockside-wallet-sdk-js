@@ -1,4 +1,4 @@
-# rockside-sdk-wallet
+# rockside-wallet-sdk-js
 
 [![npm logo](https://nodei.co/npm/@rocksideio/rockside-wallet-sdk.png?mini=true)](https://www.npmjs.com/package/@rocksideio/rockside-wallet-sdk)
 
@@ -31,47 +31,6 @@ const erc20 = new web3.eth.Contract(JSON.parse(erc20ABI), erc20Address);
 const mybalance = await erc20.methods.balanceOf(identity.address).call();
 ```
 
-### Create an encrypted wallet using Rockside
-
-```typescript
-import { Rockside } from 'rockside-wallet-sdk';
-const rockside = new Rockside({ token: 'MY_TOKEN' });
-
-const wallet: Wallet = await rockside.createEncryptedWallet('username', 'password');
-
-wallet.sign(...);
-```
-
-### Connect to an existing encrypted wallet using Rockside
-
-```typescript
-import { Rockside } from 'rockside-wallet-sdk';
-const rockside = new Rockside({ token: 'MY_TOKEN' });
-
-const wallet: Wallet = await rockside.connectEncryptedWallet('username', 'password');
-
-wallet.sign(...);
-```
-
-### Generate a Wallet and sign a meta transaction
-
-```typescript
-import { Wallet, executeMessageHash } from 'rockside-wallet-sdk';
-
-const wallet = Wallet.createRandom();
-
-const domain = { chainId: 3, verifyingContract: '0x${IDENTITY_ADDRESS}' };
-const metatx = {
-  signer: '0x0x6f32e2588C7C2Ab80ceCf49562CAD748409dCBa7',
-  to: '0x6f32e2588C7C2Ab80ceCfFFFFFFFFFFFFFFFFFFF',
-  value: 0,
-  data: '0xabba',
-  nonce: 0,
-};
-
-const hash = executeMessageHash(domain, metatx);
-const signature = await wallet.sign(hash);
-```
 
 ### Use eth_signTypedData_v4 to sign a meta transaction using Metamask
 
@@ -100,6 +59,48 @@ const signature = await new Promise((resolve, reject) => {
     return resolve(result.result);
   });
 });
+```
+
+### Generate a Wallet and sign a meta transaction
+
+```typescript
+import { Wallet, executeMessageHash } from 'rockside-wallet-sdk';
+
+const wallet = Wallet.createRandom();
+
+const domain = { chainId: 3, verifyingContract: '0x${IDENTITY_ADDRESS}' };
+const metatx = {
+  signer: '0x0x6f32e2588C7C2Ab80ceCf49562CAD748409dCBa7',
+  to: '0x6f32e2588C7C2Ab80ceCfFFFFFFFFFFFFFFFFFFF',
+  value: 0,
+  data: '0xabba',
+  nonce: 0,
+};
+
+const hash = executeMessageHash(domain, metatx);
+const signature = await wallet.sign(hash);
+```
+
+### Create an encrypted wallet using Rockside
+
+```typescript
+import { Rockside } from 'rockside-wallet-sdk';
+const rockside = new Rockside({ token: 'MY_TOKEN' });
+
+const wallet: Wallet = await rockside.createEncryptedWallet('username', 'password');
+
+wallet.sign(...);
+```
+
+### Connect to an existing encrypted wallet using Rockside
+
+```typescript
+import { Rockside } from 'rockside-wallet-sdk';
+const rockside = new Rockside({ token: 'MY_TOKEN' });
+
+const wallet: Wallet = await rockside.connectEncryptedWallet('username', 'password');
+
+wallet.sign(...);
 ```
 
 ## Run tests
