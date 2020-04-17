@@ -1,5 +1,3 @@
-import { Wallet } from './wallet';
-
 export type RocksideNetwork = [3, 'ropsten'] | [1, 'mainnet'];
 
 export type RocksideApiOpts = {
@@ -13,6 +11,8 @@ export type ExecuteTransaction = {
   to: string,
   value: number,
   data: ArrayBuffer,
+  gas: number,
+  gasPrice: number,
   signature: string,
 };
 

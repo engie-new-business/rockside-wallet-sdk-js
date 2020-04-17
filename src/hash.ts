@@ -11,6 +11,8 @@ export type TxMessage = {
   to: string,
   value: number,
   data: string,
+  gasLimit: number,
+  gasPrice: number,
   nonce: number
 };
 
@@ -19,6 +21,8 @@ export type Create2Message = {
   value: number,
   salt: number,
   initCode: string,
+  gasLimit: number,
+  gasPrice: number,
   nonce: number,
 }
 
@@ -56,15 +60,19 @@ const executeTxType = [
 		{ name: "to", type: "address" },
 		{ name: "value", type: "uint256" },
 		{ name: "data", type: "bytes" },
+		{ name: "gasLimit", type: "uint256"},
+		{ name: "gasPrice", type: "uint256"},
 		{ name: "nonce", type: "uint256" },
 ];
 
 const create2MessageType = [
-  {name: "signer", type: "address"},
-  {name: "value", type: "uint256"},
-  {name: "salt", type: "uint256"},
-  {name: "initCode", type: "bytes"},
-  {name: "nonce", type: "uint256"},
+    { name: "signer", type: "address"},
+    { name: "value", type: "uint256"},
+    { name: "salt", type: "uint256"},
+    { name: "initCode", type: "bytes"},
+    { name: "gasLimit", type: "uint256"},
+    { name: "gasPrice", type: "uint256"},
+    { name: "nonce", type: "uint256"},
 ];
 
 export function hashMessage<TMessage>(domain: RelayerDomain, typeName: string, type: EIP712Type, message: TMessage): Buffer {
@@ -80,7 +88,7 @@ export function hashMessage<TMessage>(domain: RelayerDomain, typeName: string, t
 
   const encodedMessage = TypedDataUtils.encodeData(
     typeName,
-    message,
+    message as Object,
     messageTypes,
   );
   const hashedMessage = keccak256(encodedMessage);

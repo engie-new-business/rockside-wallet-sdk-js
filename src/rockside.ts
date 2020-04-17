@@ -13,6 +13,8 @@ export type Transaction = {
   to: string,
   value: number,
   data: ArrayBuffer,
+  gas: number,
+  gasPrice: number,
 }
 
 const defaultOpts = {
@@ -128,6 +130,8 @@ export class Rockside {
       to: tx.to,
       value: tx.value,
       data: tx.data,
+      gasLimit: tx.gas,
+      gasPrice: tx.gasPrice,
       nonce: await this.api.getRelayNonce(identity, address),
     };
     const hash = executeMessageHash(domain, {
