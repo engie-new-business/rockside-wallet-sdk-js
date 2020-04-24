@@ -13,7 +13,7 @@ export type TxMessage = {
   data: string,
   gasLimit: number,
   gasPrice: number,
-  nonce: number
+  nonce: string,
 };
 
 export type Create2Message = {
@@ -23,7 +23,7 @@ export type Create2Message = {
   initCode: string,
   gasLimit: number,
   gasPrice: number,
-  nonce: number,
+  nonce: string,
 }
 
 export type ExecuteTypedData = {

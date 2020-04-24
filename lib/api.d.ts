@@ -9,6 +9,8 @@ export declare type ExecuteTransaction = {
     to: string;
     value: number;
     data: ArrayBuffer;
+    gas: number;
+    gasPrice: number;
     signature: string;
 };
 export declare type EncryptedAccount = {
@@ -45,7 +47,7 @@ export declare class RocksideApi {
         address: string;
         txHash: string;
     }>;
-    getRelayNonce(identity: string, account: string): Promise<number>;
+    getRelayNonce(identity: string, account: string, channel: number): Promise<number>;
     relayTransaction(identity: string, tx: ExecuteTransaction): Promise<string>;
     getRpcUrl(): string;
     getToken(): string;

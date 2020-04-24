@@ -15,6 +15,7 @@ export type Transaction = {
   data: ArrayBuffer,
   gas: number,
   gasPrice: number,
+  nonce?: BigInt,
 }
 
 const defaultOpts = {
@@ -125,6 +126,10 @@ export class Rockside {
   async relayTransaction(signer: Wallet, identity: string, tx: Transaction): Promise<string> {
     const address = signer.getAddress();
     const domain = { chainId: this.opts.network[0], verifyingContract: identity };
+    let nonce = tx.nonce;
+    if (!nonce) {
+      nonce = BigInt(await this.api.getRelayNonce(identity, address, 0));
+    }
     const message = {
       signer: address,
       to: tx.to,
@@ -132,7 +137,7 @@ export class Rockside {
       data: tx.data,
       gasLimit: tx.gas,
       gasPrice: tx.gasPrice,
-      nonce: await this.api.getRelayNonce(identity, address),
+      nonce: nonce.toString(),
     };
     const hash = executeMessageHash(domain, {
       ...message,

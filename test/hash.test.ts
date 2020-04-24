@@ -10,7 +10,7 @@ describe('executeMessageHash', () => {
         value: 0,
         gasLimit: 0,
         gasPrice: 0,
-        nonce: 0,
+        nonce: '0',
         data: '0x4b9f5c980000000000000000000000000000000000000000000000000000000000000001',
       }
     );
@@ -28,7 +28,7 @@ describe('executeMessageHash', () => {
         data: '0x12',
         gasLimit: 0,
         gasPrice: 0,
-        nonce: 0
+        nonce: '0'
       }
     );
 
@@ -45,7 +45,7 @@ describe('executeMessageHash', () => {
         data: '',
         gasLimit: 0,
         gasPrice: 0,
-        nonce: 0
+        nonce: '0'
       }
     );
 
@@ -64,7 +64,7 @@ describe('deployMessageHash', () => {
         salt: 0x1,
         gasLimit: 0,
         gasPrice: 0,
-        nonce: 0
+        nonce: '0'
       }
     );
 
@@ -83,7 +83,7 @@ describe('executeMessageTypedData', () => {
         data: '0x12',
         gasLimit: 0,
         gasPrice: 0,
-        nonce: 0
+        nonce: '0'
       }
     );
 
@@ -99,7 +99,7 @@ describe('executeMessageTypedData', () => {
         data: '0x12',
         gasLimit: 0,
         gasPrice: 0,
-        nonce: 0
+        nonce: '0'
       },
       primaryType: 'TxMessage',
       types: {
@@ -132,7 +132,7 @@ describe('deployMessageTypedData', () => {
         initCode: '0x12',
         gasLimit: 0,
         gasPrice: 0,
-        nonce: 0
+        nonce: '0'
       }
     );
 
@@ -148,7 +148,7 @@ describe('deployMessageTypedData', () => {
         initCode: '0x12',
         gasLimit: 0,
         gasPrice: 0,
-        nonce: 0
+        nonce: '0'
       },
       primaryType: 'Create2Message',
       types: {

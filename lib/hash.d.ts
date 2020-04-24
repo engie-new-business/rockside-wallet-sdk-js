@@ -8,14 +8,18 @@ export declare type TxMessage = {
     to: string;
     value: number;
     data: string;
-    nonce: number;
+    gasLimit: number;
+    gasPrice: number;
+    nonce: string;
 };
 export declare type Create2Message = {
     signer: string;
     value: number;
     salt: number;
     initCode: string;
-    nonce: number;
+    gasLimit: number;
+    gasPrice: number;
+    nonce: string;
 };
 export declare type ExecuteTypedData = {
     types: {

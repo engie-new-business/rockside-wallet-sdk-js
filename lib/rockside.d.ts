@@ -8,6 +8,9 @@ export declare type Transaction = {
     to: string;
     value: number;
     data: ArrayBuffer;
+    gas: number;
+    gasPrice: number;
+    nonce?: BigInt;
 };
 export declare class Rockside {
     private readonly opts;

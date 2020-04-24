@@ -159,9 +159,12 @@ export class RocksideApi {
     return { address: json['address'], txHash: json['transaction_hash'] };
   }
 
-  async getRelayNonce(identity: string, account: string): Promise<number> {
+  async getRelayNonce(identity: string, account: string, channel: number): Promise<number> {
     const route = `/ethereum/${this.opts.network[1]}/contracts/relayableidentity/${identity}/nonce`;
-    const resp = await this.send(route, 'POST', { account });
+    const resp = await this.send(route, 'POST', {
+      account,
+      channel_id: channel.toString(),
+    });
 
     if (resp.status != 200) {
       throw await this.extractError(resp);
