@@ -1,7 +1,8 @@
 export declare type RocksideNetwork = [3, 'ropsten'] | [1, 'mainnet'];
 export declare type RocksideApiOpts = {
     baseUrl: string;
-    token: string;
+    token?: string;
+    apikey?: string;
     network: RocksideNetwork;
 };
 export declare type ExecuteTransaction = {
@@ -29,13 +30,29 @@ export declare type IdentityResponse = {
     address: string;
     transactionHash: string;
 };
+export declare type TransactionOpts = {
+    from: string;
+    to: string;
+    value?: string | number | BigInt;
+    gas?: string | number | BigInt;
+    gasPrice?: string | number | BigInt;
+    data?: string;
+    nonce?: number;
+};
 export declare class RocksideApi {
     private readonly opts;
+    private readonly headers;
+    private generateHeaders;
+    private authenticationChecks;
     constructor(opts: RocksideApiOpts);
     private extractError;
     private send;
     getIdentities(): Promise<string[]>;
     createIdentity(): Promise<IdentityResponse>;
+    sendTransaction(tx: TransactionOpts): Promise<{
+        transaction_hash: string;
+        tracking_id: string;
+    }>;
     createEncryptedAccount(account: EncryptedAccount): Promise<void>;
     connectEncryptedAccount(username: string, passwordHash: ArrayBuffer): Promise<{
         data: ArrayBuffer;
