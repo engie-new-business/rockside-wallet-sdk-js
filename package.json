@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "bip39": "^3.0.2",
+    "cross-fetch": "^3.0.4",
     "eth-json-rpc-middleware": "^4.4.1",
     "eth-sig-util": "^2.5.2",
     "ethereumjs-util": "^6.2.0",

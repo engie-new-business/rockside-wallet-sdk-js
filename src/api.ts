@@ -1,8 +1,11 @@
+import fetch         from 'cross-fetch';
+
 export type RocksideNetwork = [3, 'ropsten'] | [1, 'mainnet'];
 
 export type RocksideApiOpts = {
   baseUrl: string,
-  token: string,
+  token?: string,
+  apikey?: string,
   network: RocksideNetwork;
 };
 
@@ -35,16 +38,57 @@ export type IdentityResponse = {
   transactionHash: string,
 };
 
+export type TransactionOpts = {
+  from: string;
+  to: string;
+  value?: string | number | BigInt;
+  gas?: string | number | BigInt;
+  gasPrice?: string | number | BigInt;
+  data?: string;
+  nonce?: number;
+}
+
 export class RocksideApi {
   private readonly opts: RocksideApiOpts;
+  private readonly headers: { [key: string]: string };
+
+  private generateHeaders(opts: RocksideApiOpts): { [key: string]: string } {
+
+    if (opts.apikey) {
+      return {
+        'apikey': opts.apikey
+      }
+    } else {
+      return {
+        'Authorization': 'Bearer ' + opts.token,
+      }
+    }
+
+  }
+
+  private authenticationChecks(opts: RocksideApiOpts): void {
+
+    if (opts.apikey && opts.token) {
+      throw new Error('Both access token and api key provided. Only one needed.');
+    }
+
+    if (!opts.apikey && !opts.token) {
+      throw new Error('No authentication method provided: define apikey or token.');
+    }
+
+  }
 
   constructor(opts: RocksideApiOpts) {
+
+    this.authenticationChecks(opts);
+    this.headers = this.generateHeaders(opts);
+
     this.opts = opts;
   }
 
   private async extractError(resp: Response): Promise<Error> {
-      const json = await resp.json();
-      throw new Error(json["error"]);
+    const json = await resp.json();
+    throw new Error(json['error']);
   }
 
   private async send(route: string, method: string, body: object): Promise<Response> {
@@ -52,9 +96,7 @@ export class RocksideApi {
     return await fetch(url, {
       method,
       body: !!body ? JSON.stringify(body) : null,
-      headers: {
-        "Authorization": "Bearer " + this.opts.token,
-      },
+      headers: this.headers,
     });
   }
 
@@ -83,14 +125,29 @@ export class RocksideApi {
     };
   }
 
+  async sendTransaction(tx: TransactionOpts): Promise<{ transaction_hash: string, tracking_id: string }> {
+    const resp = await this.send(`/ethereum/${this.opts.network[1]}/transaction`, 'POST', tx);
+
+    if (resp.status !== 200) {
+      throw await this.extractError(resp);
+    }
+
+    const json = await resp.json();
+
+    return {
+      transaction_hash: json['transaction_hash'],
+      tracking_id: json['tracking_id']
+    }
+  }
+
   async createEncryptedAccount(account: EncryptedAccount) {
     const resp = await this.send('/encryptedaccounts', 'PUT', {
-        username: account.username,
-        password_hash: buf2hex(account.passwordHash),
-        encrypted_encryption_key: buf2hex(account.encryptedEncryptionKey),
-        encrypted_encryption_key_iv: buf2hex(account.encryptedEncryptionKeyIV),
-        iterations: account.iterations,
-        password_derived_key_hash: buf2hex(account.passwordDerivedKeyHash),
+      username: account.username,
+      password_hash: buf2hex(account.passwordHash),
+      encrypted_encryption_key: buf2hex(account.encryptedEncryptionKey),
+      encrypted_encryption_key_iv: buf2hex(account.encryptedEncryptionKeyIV),
+      iterations: account.iterations,
+      password_derived_key_hash: buf2hex(account.passwordDerivedKeyHash),
     });
 
     if (resp.status != 201 && resp.status != 409) {
@@ -98,7 +155,7 @@ export class RocksideApi {
     }
   }
 
-  async connectEncryptedAccount(username: string, passwordHash: ArrayBuffer): Promise<{data: ArrayBuffer, iv: ArrayBuffer}> {
+  async connectEncryptedAccount(username: string, passwordHash: ArrayBuffer): Promise<{ data: ArrayBuffer, iv: ArrayBuffer }> {
     const resp = await this.send('/encryptedaccounts/connect', 'POST', {
       username,
       password_hash: buf2hex(passwordHash),
@@ -107,7 +164,7 @@ export class RocksideApi {
       throw await this.extractError(resp);
     }
 
-    const json = await resp.json()
+    const json = await resp.json();
 
     return {
       data: hex2buf(json['encrypted_encryption_key']),
@@ -148,7 +205,7 @@ export class RocksideApi {
 
   async deployIdentityContract(address: string): Promise<{ address: string, txHash: string }> {
     const route = `/ethereum/${this.opts.network[1]}/contracts/relayableidentity`;
-    const resp = await this.send(route, 'POST', { account: address });
+    const resp = await this.send(route, 'POST', {account: address});
 
     if (resp.status != 201) {
       throw await this.extractError(resp);
@@ -156,7 +213,7 @@ export class RocksideApi {
 
     const json = await resp.json();
 
-    return { address: json['address'], txHash: json['transaction_hash'] };
+    return {address: json['address'], txHash: json['transaction_hash']};
   }
 
   async getRelayNonce(identity: string, account: string, channel: number): Promise<number> {
@@ -195,11 +252,11 @@ export class RocksideApi {
   }
 
   getRpcUrl(): string {
-    return `${this.opts.baseUrl}/ethereum/${this.opts.network[1]}/jsonrpc`
+    return `${this.opts.baseUrl}/ethereum/${this.opts.network[1]}/jsonrpc`;
   }
 
   getToken(): string {
-    return this.opts.token
+    return this.opts.token;
   }
 }
 
@@ -208,11 +265,11 @@ function buf2hex(buffer: ArrayBuffer): string { // buffer is an ArrayBuffer
 }
 
 function hex2buf(s: string): ArrayBuffer { // buffer is an ArrayBuffer
-  const noPrefix = s.substring(2)
+  const noPrefix = s.substring(2);
   const length = noPrefix.length / 2;
   const view = new Uint8Array(length);
   for (let i = 0; i < noPrefix.length; i += 2) {
-    view[i / 2] = parseInt(noPrefix.substring(i, i + 2), 16)
+    view[i / 2] = parseInt(noPrefix.substring(i, i + 2), 16);
   }
   return view.buffer;
 }
