@@ -32,7 +32,7 @@ export declare type IdentityResponse = {
 };
 export declare type TransactionOpts = {
     from: string;
-    to: string;
+    to?: string;
     value?: string | number | BigInt;
     gas?: string | number | BigInt;
     gasPrice?: string | number | BigInt;
