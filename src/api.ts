@@ -125,6 +125,46 @@ export class RocksideApi {
     };
   }
 
+  async getEOAs(): Promise<string[]> {
+    const resp = await this.send(`/ethereum/eoa`, 'GET', null);
+
+    if (resp.status !== 200) {
+      throw await this.extractError(resp);
+    }
+
+    return resp.json();
+  }
+
+  async createEOA(): Promise<{ address: string }> {
+    const resp = await this.send(`/ethereum/eoa`, 'POST', {});
+
+    if (resp.status !== 200) {
+      throw await this.extractError(resp);
+    }
+
+    const json = await resp.json();
+
+    return {
+      address: json['address']
+    }
+  }
+
+  async signMessageWithEOA(eoa: string, hash: string): Promise<{ signed_message: string }> {
+    const resp = await this.send(`/ethereum/eoa/${eoa}/sign-message`, 'POST', {
+      message: hash
+    });
+
+    if (resp.status !== 200) {
+      throw await this.extractError(resp);
+    }
+
+    const json = await resp.json();
+
+    return {
+      signed_message: json['signed_message']
+    }
+  }
+
   async sendTransaction(tx: TransactionOpts): Promise<{ transaction_hash: string, tracking_id: string }> {
     const resp = await this.send(`/ethereum/${this.opts.network[1]}/transaction`, 'POST', tx);
 

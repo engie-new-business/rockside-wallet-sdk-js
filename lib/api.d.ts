@@ -49,6 +49,13 @@ export declare class RocksideApi {
     private send;
     getIdentities(): Promise<string[]>;
     createIdentity(): Promise<IdentityResponse>;
+    getEOAs(): Promise<string[]>;
+    createEOA(): Promise<{
+        address: string;
+    }>;
+    signMessageWithEOA(eoa: string, hash: string): Promise<{
+        signed_message: string;
+    }>;
     sendTransaction(tx: TransactionOpts): Promise<{
         transaction_hash: string;
         tracking_id: string;
