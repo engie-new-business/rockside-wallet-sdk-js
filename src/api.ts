@@ -10,6 +10,7 @@ export type RocksideApiOpts = {
 };
 
 export type ExecuteTransaction = {
+  relayer: string,
   from: string,
   to: string,
   value: number,
@@ -256,8 +257,8 @@ export class RocksideApi {
     return {address: json['address'], txHash: json['transaction_hash']};
   }
 
-  async getRelayNonce(identity: string, account: string, channel: number): Promise<number> {
-    const route = `/ethereum/${this.opts.network[1]}/contracts/relayableidentity/${identity}/nonce`;
+  async getRelayParams(identity: string, account: string, channel: number): Promise<{ nonce: number, relayer: string }> {
+    const route = `/ethereum/${this.opts.network[1]}/contracts/relayableidentity/${identity}/relayParams`;
     const resp = await this.send(route, 'POST', {
       account,
       channel_id: channel.toString(),
@@ -269,12 +270,13 @@ export class RocksideApi {
 
     const json = await resp.json();
 
-    return Number(json['nonce']);
+    return { nonce: Number(json['nonce']), relayer: json['relayer']};
   }
 
   async relayTransaction(identity: string, tx: ExecuteTransaction): Promise<string> {
     const route = `/ethereum/${this.opts.network[1]}/contracts/relayableidentity/${identity}/relayExecute`;
     const resp = await this.send(route, 'POST', {
+      relayer: tx.relayer,
       from: tx.from,
       to: tx.to,
       value: `0x${tx.value.toString(16)}`,

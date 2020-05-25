@@ -7,6 +7,7 @@ export type RelayerDomain = {
 };
 
 export type TxMessage = {
+  relayer: string,
   signer: string,
   to: string,
   value: number,
@@ -17,6 +18,7 @@ export type TxMessage = {
 };
 
 export type Create2Message = {
+  relayer: string,
   signer: string,
   value: number,
   salt: number,
@@ -56,6 +58,7 @@ const eip712DomainType = [
 ];
 
 const executeTxType = [
+		{ name: "relayer", type: "address" },
 		{ name: "signer", type: "address" },
 		{ name: "to", type: "address" },
 		{ name: "value", type: "uint256" },
@@ -66,6 +69,7 @@ const executeTxType = [
 ];
 
 const create2MessageType = [
+    { name: "relayer", type: "address"},
     { name: "signer", type: "address"},
     { name: "value", type: "uint256"},
     { name: "salt", type: "uint256"},

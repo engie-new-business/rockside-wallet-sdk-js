@@ -5,6 +5,7 @@ export declare type RocksideOpts = {} & RocksideApiOpts;
 export declare const ROPSTEN: RocksideNetwork;
 export declare const MAINNET: RocksideNetwork;
 export declare type Transaction = {
+    relayer: string;
     to: string;
     value: number;
     data: ArrayBuffer;

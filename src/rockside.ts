@@ -10,6 +10,7 @@ export const ROPSTEN: RocksideNetwork = [3, 'ropsten'];
 export const MAINNET: RocksideNetwork = [1, 'mainnet'];
 
 export type Transaction = {
+  relayer: string,
   to: string,
   value: number,
   data: ArrayBuffer,
@@ -127,10 +128,14 @@ export class Rockside {
     const address = signer.getAddress();
     const domain = { chainId: this.opts.network[0], verifyingContract: identity };
     let nonce = tx.nonce;
-    if (!nonce) {
-      nonce = BigInt(await this.api.getRelayNonce(identity, address, 0));
+    let relayer = tx.relayer;
+    if (!nonce || !tx.relayer) {
+      let params = await this.api.getRelayParams(identity, address, 0);
+      nonce = BigInt(params.nonce)
+      relayer = params.relayer
     }
     const message = {
+      relayer: relayer,
       signer: address,
       to: tx.to,
       value: tx.value,

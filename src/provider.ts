@@ -44,6 +44,7 @@ export class Provider {
 
         processTransaction: async (tx: any): Promise<string> => {
           const metatx = {
+            relayer: tx.relayer,
             to: tx.to,
             value: tx.value || 0,
             data: Buffer.from(tx.data.substring(2), 'hex'),

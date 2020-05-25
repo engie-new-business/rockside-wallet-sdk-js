@@ -6,6 +6,7 @@ export declare type RocksideApiOpts = {
     network: RocksideNetwork;
 };
 export declare type ExecuteTransaction = {
+    relayer: string;
     from: string;
     to: string;
     value: number;
@@ -71,7 +72,10 @@ export declare class RocksideApi {
         address: string;
         txHash: string;
     }>;
-    getRelayNonce(identity: string, account: string, channel: number): Promise<number>;
+    getRelayParams(identity: string, account: string, channel: number): Promise<{
+        nonce: number;
+        relayer: string;
+    }>;
     relayTransaction(identity: string, tx: ExecuteTransaction): Promise<string>;
     getRpcUrl(): string;
     getToken(): string;
