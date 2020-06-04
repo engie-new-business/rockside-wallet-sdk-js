@@ -4,6 +4,7 @@ export declare type RelayerDomain = {
     verifyingContract: string;
 };
 export declare type TxMessage = {
+    relayer: string;
     signer: string;
     to: string;
     value: number;
@@ -13,6 +14,7 @@ export declare type TxMessage = {
     nonce: string;
 };
 export declare type Create2Message = {
+    relayer: string;
     signer: string;
     value: number;
     salt: number;
