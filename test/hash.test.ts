@@ -5,54 +5,45 @@ describe('executeMessageHash', () => {
     const hash = hasher.executeMessageHash(
       { chainId: 3, verifyingContract: '0x3711d4b720577f0f5887989AaE5e26263Ed92999' },
       {
-        relayer: '0x0000000000000000000000000000000000000001',
         signer: '0x502fce03af4bfd3dc991a6f7d0523cb920e1dbc8',
         to: '0x87ae49b6ffd2ea714fb08710ce5ccda5e490e07b',
         value: 0,
-        gasLimit: 0,
-        gasPrice: 0,
         nonce: '0',
         data: '0x4b9f5c980000000000000000000000000000000000000000000000000000000000000001',
       }
     );
 
-    expect(hash.toString('hex')).toEqual('a9840b8baec9fc52b192d8400ffd7d203434a2127f9df1d093af04cfbc926fa6');
+    expect(hash.toString('hex')).toEqual('d796c272a69dfa572dcdaac9f0baf24c74ca4a00a5667a806695dd2693453e5f');
   });
 
   it('should return the correct hash for the execute transaction', () => {
     const hash = hasher.executeMessageHash(
       { chainId: 3, verifyingContract: '0xDb45eAB135582c7e7852a8E890B4495c9C1D822d' },
       {
-        relayer: '0x0000000000000000000000000000000000000001',
         signer: '0x74f1a7370c8ed980b2fa53d25999931209b25f1c',
         to: '0x0000000000000000000000000000000000000000',
         value: 0,
         data: '0x12',
-        gasLimit: 0,
-        gasPrice: 0,
         nonce: '0'
       }
     );
 
-    expect(hash.toString('hex')).toEqual('58c0420e2f223c790d48fde072167434801421fda28e0ad1afa8548c3108254f');
+    expect(hash.toString('hex')).toEqual('006c0f307dfa8fb3871cd5a4f9df21deb4f0301d4db04c582aea4086ffb018a8');
   });
 
   it('should return the correct hash for the execute transaction with empty data', () => {
     const hash = hasher.executeMessageHash(
       { chainId: 3, verifyingContract: '0xDb45eAB135582c7e7852a8E890B4495c9C1D822d' },
       {
-        relayer: '0x0000000000000000000000000000000000000001',
         signer: '0x74f1a7370c8ed980b2fa53d25999931209b25f1c',
         to: '0x0000000000000000000000000000000000000000',
         value: 0,
         data: '',
-        gasLimit: 0,
-        gasPrice: 0,
         nonce: '0'
       }
     );
 
-    expect(hash.toString('hex')).toEqual('1659f2806950447e08a712b6205300f24591926eab21924a87f466585a5d6816');
+    expect(hash.toString('hex')).toEqual('9973277da26cf31f7beeff11652741b9b838d66593215068b59d5fe373689c3c');
   });
 });
 
@@ -81,13 +72,10 @@ describe('executeMessageTypedData', () => {
     const typedData = hasher.executeMessageTypedData(
       { chainId: 3, verifyingContract: '0xDb45eAB135582c7e7852a8E890B4495c9C1D822d' },
       {
-        relayer: '0x0000000000000000000000000000000000000001',
-        signer: '0x74f1a7370c8ed980b2fa53d25999931209b25f1c',
+         signer: '0x74f1a7370c8ed980b2fa53d25999931209b25f1c',
         to: '0x0000000000000000000000000000000000000000',
         value: 0,
         data: '0x12',
-        gasLimit: 0,
-        gasPrice: 0,
         nonce: '0'
       }
     );
@@ -98,25 +86,19 @@ describe('executeMessageTypedData', () => {
         verifyingContract: '0xDb45eAB135582c7e7852a8E890B4495c9C1D822d',
       },
       message: {
-        relayer: '0x0000000000000000000000000000000000000001',
         signer: '0x74f1a7370c8ed980b2fa53d25999931209b25f1c',
         to: '0x0000000000000000000000000000000000000000',
         value: 0,
         data: '0x12',
-        gasLimit: 0,
-        gasPrice: 0,
         nonce: '0'
       },
       primaryType: 'TxMessage',
       types: {
         TxMessage: [
-          { name: "relayer", type: "address" },
           { name: "signer", type: "address" },
           { name: "to", type: "address" },
           { name: "value", type: "uint256" },
           { name: "data", type: "bytes" },
-          { name: "gasLimit", type: "uint256" },
-          { name: "gasPrice", type: "uint256" },
           { name: "nonce", type: "uint256" },
         ],
         EIP712Domain: [
