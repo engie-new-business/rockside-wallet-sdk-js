@@ -81,27 +81,9 @@ const hash = executeMessageHash(domain, metatx);
 const signature = await wallet.sign(hash);
 ```
 
-### Create an encrypted wallet using Rockside
 
-```typescript
-import { Rockside } from 'rockside-wallet-sdk';
-const rockside = new Rockside({ token: 'MY_TOKEN' });
 
-const wallet: Wallet = await rockside.createEncryptedWallet('username', 'password');
 
-wallet.sign(...);
-```
-
-### Connect to an existing encrypted wallet using Rockside
-
-```typescript
-import { Rockside } from 'rockside-wallet-sdk';
-const rockside = new Rockside({ token: 'MY_TOKEN' });
-
-const wallet: Wallet = await rockside.connectEncryptedWallet('username', 'password');
-
-wallet.sign(...);
-```
 
 ## Run tests
 
