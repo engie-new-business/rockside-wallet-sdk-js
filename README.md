@@ -38,7 +38,7 @@ const mybalance = await erc20.methods.balanceOf(identity.address).call();
 import { executeMessageTypedData } from 'rockside-wallet-sdk';
 
 const signer = '0x0x6f32e2588C7C2Ab80ceCf49562CAD748409dCBa7';
-const domain = { chainId: 3, verifyingContract: '0x${IDENTITY_ADDRESS}' };
+const domain = { chainId: 3, verifyingContract: '0x${FORWARDER_ADDRESS}' };
 const metatx = {
   signer,
   to: '0x6f32e2588C7C2Ab80ceCfFFFFFFFFFFFFFFFFFFF',
@@ -68,7 +68,7 @@ import { Wallet, executeMessageHash } from 'rockside-wallet-sdk';
 
 const wallet = Wallet.createRandom();
 
-const domain = { chainId: 3, verifyingContract: '0x${IDENTITY_ADDRESS}' };
+const domain = { chainId: 3, verifyingContract: '0x${FORWARDER_ADDRESS}' };
 const metatx = {
   signer: '0x0x6f32e2588C7C2Ab80ceCf49562CAD748409dCBa7',
   to: '0x6f32e2588C7C2Ab80ceCfFFFFFFFFFFFFFFFFFFF',

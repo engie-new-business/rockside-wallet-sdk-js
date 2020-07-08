@@ -9,21 +9,9 @@ export type RelayerDomain = {
 export type TxMessage = {
   signer: string,
   to: string,
-  value: number,
   data: string,
   nonce: string,
 };
-
-export type Create2Message = {
-  relayer: string,
-  signer: string,
-  value: number,
-  salt: number,
-  initCode: string,
-  gasLimit: number,
-  gasPrice: number,
-  nonce: string,
-}
 
 export type ExecuteTypedData = {
   types: {
@@ -37,16 +25,6 @@ export type ExecuteTypedData = {
 
 type EIP712Type = Array<{ name: string, type: string }>;
 
-export type DeployTypedData = {
-  types: {
-    EIP712Domain: EIP712Type,
-    Create2Message: EIP712Type,
-  },
-  message: Create2Message,
-  primaryType: string,
-  domain: RelayerDomain,
-}
-
 /* EIP712 type definitions */
 
 const eip712DomainType = [
@@ -57,20 +35,8 @@ const eip712DomainType = [
 const executeTxType = [
 		{ name: "signer", type: "address" },
 		{ name: "to", type: "address" },
-		{ name: "value", type: "uint256" },
 		{ name: "data", type: "bytes" },
 		{ name: "nonce", type: "uint256" },
-];
-
-const create2MessageType = [
-    { name: "relayer", type: "address"},
-    { name: "signer", type: "address"},
-    { name: "value", type: "uint256"},
-    { name: "salt", type: "uint256"},
-    { name: "initCode", type: "bytes"},
-    { name: "gasLimit", type: "uint256"},
-    { name: "gasPrice", type: "uint256"},
-    { name: "nonce", type: "uint256"},
 ];
 
 export function hashMessage<TMessage>(domain: RelayerDomain, typeName: string, type: EIP712Type, message: TMessage): Buffer {
@@ -115,20 +81,4 @@ export function executeMessageTypedData(domain: RelayerDomain, message: TxMessag
 
 export function executeMessageHash(domain: RelayerDomain, message: TxMessage): Buffer {
   return hashMessage(domain, 'TxMessage', executeTxType, message);
-}
-
-export function deployMessageTypedData(domain: RelayerDomain, message: Create2Message): DeployTypedData {
-  return {
-    types: {
-      EIP712Domain: eip712DomainType,
-      Create2Message: create2MessageType,
-    },
-    domain: domain,
-    primaryType: 'Create2Message',
-    message: message,
-  };
-}
-
-export function deployMessageHash(domain: RelayerDomain, message: Create2Message): Buffer {
-  return hashMessage(domain, 'Create2Message', create2MessageType, message);
 }
