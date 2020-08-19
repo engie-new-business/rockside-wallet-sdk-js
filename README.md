@@ -6,7 +6,6 @@ The Rockside Wallet SDK helps implementing a Wallet and integrating it with Rock
 
 -   Create a HD wallet, handle recovery and signing
 -   Create a Rockside meta transaction signature
--   Create a Rockside encrypted account
 
 ## Usage
 

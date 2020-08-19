@@ -17,8 +17,6 @@ export declare class Rockside {
     constructor(opts: RocksideOpts);
     getProvider(): Provider;
     getWalletProvider(wallet: Wallet, identity: string): Provider;
-    createEncryptedWallet(username: string, password: string): Promise<Wallet>;
-    connectEncryptedWallet(username: string, password: string): Promise<Wallet>;
     private hasExistingIdentityStored;
     private storeIdentity;
     deployIdentity(address: string, forwarder: string): Promise<{

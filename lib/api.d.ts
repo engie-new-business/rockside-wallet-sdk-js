@@ -37,6 +37,10 @@ export declare type EncryptedWallet = {
     encryptedMnemonic: ArrayBuffer;
     encryptedMnemonicIV: ArrayBuffer;
 };
+export declare type ForwarderResponse = {
+    address: string;
+    transactionHash: string;
+};
 export declare type SmartWalletResponse = {
     address: string;
     transactionHash: string;
@@ -60,6 +64,8 @@ export declare class RocksideApi {
     private send;
     getSmartWallets(): Promise<string[]>;
     createSmartWallet(account: any, forwarder: any): Promise<SmartWalletResponse>;
+    createForwarder(owner: string): Promise<ForwarderResponse>;
+    getForwarders(): Promise<string[]>;
     getEOAs(): Promise<string[]>;
     createEOA(): Promise<{
         address: string;
@@ -71,13 +77,6 @@ export declare class RocksideApi {
         transaction_hash: string;
         tracking_id: string;
     }>;
-    createEncryptedAccount(account: EncryptedAccount): Promise<void>;
-    connectEncryptedAccount(username: string, passwordHash: ArrayBuffer): Promise<{
-        data: ArrayBuffer;
-        iv: ArrayBuffer;
-    }>;
-    createEncryptedWallet(account: EncryptedAccount, wallet: EncryptedWallet): Promise<void>;
-    getEncryptedWallets(username: string, passwordHash: ArrayBuffer): Promise<Array<EncryptedWallet>>;
     getRelayParams(forwarder: string, account: string, channel: number): Promise<RelayParams>;
     relayTransaction(forwarder: string, tx: ExecuteTransaction): Promise<string>;
     getRpcUrl(): string;

@@ -47,6 +47,11 @@ export type EncryptedWallet = {
   encryptedMnemonicIV: ArrayBuffer,
 };
 
+export type ForwarderResponse = {
+  address: string,
+  transactionHash: string,
+};
+
 export type SmartWalletResponse = {
   address: string,
   transactionHash: string,
@@ -139,6 +144,33 @@ export class RocksideApi {
     };
   }
 
+
+  async createForwarder(owner: string): Promise<ForwarderResponse> {
+    const resp = await this.send(`/ethereum/${this.opts.network[1]}/forwarders`, 'POST', { owner});
+
+    if (resp.status != 201) {
+      throw await this.extractError(resp);
+    }
+
+    const json = await resp.json();
+    return {
+      address: json.address,
+      transactionHash: json.transaction_hash,
+    };
+
+  }
+
+  async getForwarders(): Promise<string[]> {
+    const resp = await this.send(`/ethereum/${this.opts.network[1]}/forwarders`, 'GET', null);
+
+    if (resp.status != 200) {
+      throw await this.extractError(resp);
+    }
+
+    const json = await resp.json();
+    return json as string[];
+  }
+
   async getEOAs(): Promise<string[]> {
     const resp = await this.send(`/ethereum/eoa`, 'GET', null);
 
@@ -192,69 +224,6 @@ export class RocksideApi {
       transaction_hash: json['transaction_hash'],
       tracking_id: json['tracking_id']
     }
-  }
-
-  async createEncryptedAccount(account: EncryptedAccount) {
-    const resp = await this.send('/encryptedaccounts', 'PUT', {
-      username: account.username,
-      password_hash: buf2hex(account.passwordHash),
-      encrypted_encryption_key: buf2hex(account.encryptedEncryptionKey),
-      encrypted_encryption_key_iv: buf2hex(account.encryptedEncryptionKeyIV),
-      iterations: account.iterations,
-      password_derived_key_hash: buf2hex(account.passwordDerivedKeyHash),
-    });
-
-    if (resp.status != 201 && resp.status != 409) {
-      throw await this.extractError(resp);
-    }
-  }
-
-  async connectEncryptedAccount(username: string, passwordHash: ArrayBuffer): Promise<{ data: ArrayBuffer, iv: ArrayBuffer }> {
-    const resp = await this.send('/encryptedaccounts/connect', 'POST', {
-      username,
-      password_hash: buf2hex(passwordHash),
-    });
-    if (resp.status != 200) {
-      throw await this.extractError(resp);
-    }
-
-    const json = await resp.json();
-
-    return {
-      data: hex2buf(json['encrypted_encryption_key']),
-      iv: new Uint8Array(hex2buf(json['encryption_key_iv'])),
-    };
-  }
-
-  async createEncryptedWallet(account: EncryptedAccount, wallet: EncryptedWallet) {
-    const resp = await this.send('/encryptedaccounts/wallets', 'PUT', {
-      username: account.username,
-      password_hash: buf2hex(account.passwordHash),
-      encrypted_mnemonic: buf2hex(wallet.encryptedMnemonic),
-      encrypted_mnemonic_iv: buf2hex(wallet.encryptedMnemonicIV),
-    });
-    if (resp.status != 201) {
-      throw await this.extractError(resp);
-    }
-  }
-
-  async getEncryptedWallets(username: string, passwordHash: ArrayBuffer): Promise<Array<EncryptedWallet>> {
-    const resp = await this.send('/encryptedaccounts/wallets', 'POST', {
-      username,
-      password_hash: buf2hex(passwordHash),
-    });
-    if (resp.status != 200) {
-      throw await this.extractError(resp);
-    }
-
-    const json = await resp.json();
-
-    const wallets = json.map(jsonWallet => ({
-      encryptedMnemonic: hex2buf(jsonWallet['encrypted_mnemonic']),
-      encryptedMnemonicIV: hex2buf(jsonWallet['mnemonic_iv']),
-    }));
-
-    return wallets;
   }
 
   async getRelayParams(forwarder: string, account: string, channel: number): Promise<RelayParams> {
