@@ -1,6 +1,8 @@
-import fetch         from 'cross-fetch';
+import fetch from 'cross-fetch';
 
 export type RocksideNetwork = [3, 'ropsten'] | [1, 'mainnet'];
+
+export type RelaySpeed = 'fastest' | 'fast' | 'average' | 'safelow';
 
 export type RocksideApiOpts = {
   baseUrl: string,
@@ -9,14 +11,25 @@ export type RocksideApiOpts = {
   network: RocksideNetwork;
 };
 
+export enum GasPrices {
+    FASTEST = 'fastest',
+    FAST = 'fast',
+    AVERAGE = 'average',
+    SAFELOW = 'safelow',
+};
+
+export type RelayParams = {
+  nonce: string,
+  gasPrices: GasPrices,
+};
+
 export type ExecuteTransaction = {
-  relayer: string,
-  from: string,
+  signer: string,
   to: string,
-  value: number,
   data: ArrayBuffer,
-  gas: number,
-  gasPrice: number,
+  nonce: string,
+  speed: RelaySpeed,
+  gasPriceLimit: string,
   signature: string,
 };
 
@@ -34,7 +47,7 @@ export type EncryptedWallet = {
   encryptedMnemonicIV: ArrayBuffer,
 };
 
-export type IdentityResponse = {
+export type SmartWalletResponse = {
   address: string,
   transactionHash: string,
 };
@@ -101,8 +114,8 @@ export class RocksideApi {
     });
   }
 
-  async getIdentities(): Promise<string[]> {
-    const resp = await this.send(`/ethereum/${this.opts.network[1]}/identities`, 'GET', null);
+  async getSmartWallets(): Promise<string[]> {
+    const resp = await this.send(`/ethereum/${this.opts.network[1]}/smartwallets`, 'GET', null);
 
     if (resp.status != 200) {
       throw await this.extractError(resp);
@@ -112,8 +125,8 @@ export class RocksideApi {
     return json as string[];
   }
 
-  async createIdentity(): Promise<IdentityResponse> {
-    const resp = await this.send(`/ethereum/${this.opts.network[1]}/identities`, 'POST', {});
+  async createSmartWallet(account, forwarder): Promise<SmartWalletResponse> {
+    const resp = await this.send(`/ethereum/${this.opts.network[1]}/smartwallets`, 'POST', { account, forwarder});
 
     if (resp.status != 201) {
       throw await this.extractError(resp);
@@ -244,21 +257,8 @@ export class RocksideApi {
     return wallets;
   }
 
-  async deployIdentityContract(address: string): Promise<{ address: string, txHash: string }> {
-    const route = `/ethereum/${this.opts.network[1]}/contracts/relayableidentity`;
-    const resp = await this.send(route, 'POST', {account: address});
-
-    if (resp.status != 201) {
-      throw await this.extractError(resp);
-    }
-
-    const json = await resp.json();
-
-    return {address: json['address'], txHash: json['transaction_hash']};
-  }
-
-  async getRelayParams(identity: string, account: string, channel: number): Promise<{ nonce: number, relayer: string }> {
-    const route = `/ethereum/${this.opts.network[1]}/contracts/relayableidentity/${identity}/relayParams`;
+  async getRelayParams(forwarder: string, account: string, channel: number): Promise<RelayParams> {
+    const route = `/ethereum/${this.opts.network[1]}/forwarders/${forwarder}/relayParams`;
     const resp = await this.send(route, 'POST', {
       account,
       channel_id: channel.toString(),
@@ -270,17 +270,20 @@ export class RocksideApi {
 
     const json = await resp.json();
 
-    return { nonce: Number(json['nonce']), relayer: json['relayer']};
+    return { nonce: json['nonce'], gasPrices: json['gas_prices'] };
   }
 
-  async relayTransaction(identity: string, tx: ExecuteTransaction): Promise<string> {
-    const route = `/ethereum/${this.opts.network[1]}/contracts/relayableidentity/${identity}/relayExecute`;
+  async relayTransaction(forwarder: string, tx: ExecuteTransaction): Promise<string> {
+    const route = `/ethereum/${this.opts.network[1]}/forwarders/${forwarder}`;
     const resp = await this.send(route, 'POST', {
-      relayer: tx.relayer,
-      from: tx.from,
-      to: tx.to,
-      value: `0x${tx.value.toString(16)}`,
-      data: buf2hex(tx.data),
+      message: {
+        signer: tx.signer,
+        to: tx.to,
+        data: buf2hex(tx.data),
+        nonce: tx.nonce,
+      },
+      speed: tx.speed,
+      gas_price_limit: tx.gasPriceLimit,
       signature: tx.signature,
     });
 

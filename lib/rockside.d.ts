@@ -1,17 +1,15 @@
 import { Wallet } from './wallet';
 import { Provider } from './provider';
-import { RocksideApi, RocksideApiOpts, RocksideNetwork } from './api';
+import { RocksideApi, RocksideApiOpts, RocksideNetwork, RelaySpeed } from './api';
 export declare type RocksideOpts = {} & RocksideApiOpts;
 export declare const ROPSTEN: RocksideNetwork;
 export declare const MAINNET: RocksideNetwork;
 export declare type Transaction = {
-    relayer: string;
     to: string;
-    value: number;
     data: ArrayBuffer;
-    gas: number;
-    gasPrice: number;
-    nonce?: BigInt;
+    speed: RelaySpeed;
+    gasPriceLimit?: string;
+    nonce?: string;
 };
 export declare class Rockside {
     private readonly opts;
@@ -23,7 +21,7 @@ export declare class Rockside {
     connectEncryptedWallet(username: string, password: string): Promise<Wallet>;
     private hasExistingIdentityStored;
     private storeIdentity;
-    deployIdentity(address: string): Promise<{
+    deployIdentity(address: string, forwarder: string): Promise<{
         address: string;
         txHash?: string;
     }>;

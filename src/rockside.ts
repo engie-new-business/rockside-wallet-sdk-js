@@ -2,7 +2,7 @@ import { Wallet, BaseWallet } from './wallet';
 import { Provider } from './provider';
 import { executeMessageHash } from './hash';
 import * as cryptolib from './crypto';
-import { RocksideApi, RocksideApiOpts, RocksideNetwork } from './api';
+import { RocksideApi, RocksideApiOpts, RocksideNetwork, RelaySpeed } from './api';
 
 export type RocksideOpts = {} & RocksideApiOpts;
 
@@ -10,13 +10,11 @@ export const ROPSTEN: RocksideNetwork = [3, 'ropsten'];
 export const MAINNET: RocksideNetwork = [1, 'mainnet'];
 
 export type Transaction = {
-  relayer: string,
   to: string,
-  value: number,
   data: ArrayBuffer,
-  gas: number,
-  gasPrice: number,
-  nonce?: BigInt,
+  speed: RelaySpeed,
+  gasPriceLimit?: string,
+  nonce?: string,
 }
 
 const defaultOpts = {
@@ -115,11 +113,11 @@ export class Rockside {
     window.localStorage.setItem(`id-${address.toLowerCase()}`, identity);
   }
 
-  async deployIdentity(address: string): Promise<{ address: string, txHash?: string }> {
+  async deployIdentity(address: string, forwarder: string): Promise<{ address: string, txHash?: string }> {
     const existingIdentity = this.hasExistingIdentityStored(address);
     if (!!existingIdentity) return { address: existingIdentity };
 
-    const identity = await this.api.deployIdentityContract(address);
+    const identity = await this.api.createSmartWallet(address, forwarder);
     this.storeIdentity(address, identity.address);
     return identity;
   }
@@ -128,20 +126,21 @@ export class Rockside {
     const address = signer.getAddress();
     const domain = { chainId: this.opts.network[0], verifyingContract: identity };
     let nonce = tx.nonce;
-    let relayer = tx.relayer;
-    if (!nonce || !tx.relayer) {
+    let gasPriceLimit = tx.gasPriceLimit;
+    if (!nonce || !gasPriceLimit) {
       let params = await this.api.getRelayParams(identity, address, 0);
-      nonce = BigInt(params.nonce)
-      relayer = params.relayer
+      if (!nonce) {
+        nonce = params.nonce
+      }
+
+      if (!gasPriceLimit) {
+        gasPriceLimit = params.gasPrices[tx.speed];
+      }
     }
     const message = {
-      relayer: relayer,
       signer: address,
       to: tx.to,
-      value: tx.value,
       data: tx.data,
-      gasLimit: tx.gas,
-      gasPrice: tx.gasPrice,
       nonce: nonce.toString(),
     };
     const hash = executeMessageHash(domain, {
@@ -151,9 +150,11 @@ export class Rockside {
     const signature = await signer.sign(hash);
 
     return this.api.relayTransaction(identity, {
-      ...tx,
-      from: signer.getAddress(),
+      ...message,
+      signer: signer.getAddress(),
       signature,
+      speed: tx.speed,
+      gasPriceLimit: tx.gasPriceLimit,
     });
   }
 }

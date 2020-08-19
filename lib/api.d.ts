@@ -1,18 +1,28 @@
 export declare type RocksideNetwork = [3, 'ropsten'] | [1, 'mainnet'];
+export declare type RelaySpeed = 'fastest' | 'fast' | 'average' | 'safelow';
 export declare type RocksideApiOpts = {
     baseUrl: string;
     token?: string;
     apikey?: string;
     network: RocksideNetwork;
 };
+export declare enum GasPrices {
+    FASTEST = "fastest",
+    FAST = "fast",
+    AVERAGE = "average",
+    SAFELOW = "safelow"
+}
+export declare type RelayParams = {
+    nonce: string;
+    gasPrices: GasPrices;
+};
 export declare type ExecuteTransaction = {
-    relayer: string;
-    from: string;
+    signer: string;
     to: string;
-    value: number;
     data: ArrayBuffer;
-    gas: number;
-    gasPrice: number;
+    nonce: string;
+    speed: RelaySpeed;
+    gasPriceLimit: string;
     signature: string;
 };
 export declare type EncryptedAccount = {
@@ -27,7 +37,7 @@ export declare type EncryptedWallet = {
     encryptedMnemonic: ArrayBuffer;
     encryptedMnemonicIV: ArrayBuffer;
 };
-export declare type IdentityResponse = {
+export declare type SmartWalletResponse = {
     address: string;
     transactionHash: string;
 };
@@ -48,8 +58,8 @@ export declare class RocksideApi {
     constructor(opts: RocksideApiOpts);
     private extractError;
     private send;
-    getIdentities(): Promise<string[]>;
-    createIdentity(): Promise<IdentityResponse>;
+    getSmartWallets(): Promise<string[]>;
+    createSmartWallet(account: any, forwarder: any): Promise<SmartWalletResponse>;
     getEOAs(): Promise<string[]>;
     createEOA(): Promise<{
         address: string;
@@ -68,15 +78,8 @@ export declare class RocksideApi {
     }>;
     createEncryptedWallet(account: EncryptedAccount, wallet: EncryptedWallet): Promise<void>;
     getEncryptedWallets(username: string, passwordHash: ArrayBuffer): Promise<Array<EncryptedWallet>>;
-    deployIdentityContract(address: string): Promise<{
-        address: string;
-        txHash: string;
-    }>;
-    getRelayParams(identity: string, account: string, channel: number): Promise<{
-        nonce: number;
-        relayer: string;
-    }>;
-    relayTransaction(identity: string, tx: ExecuteTransaction): Promise<string>;
+    getRelayParams(forwarder: string, account: string, channel: number): Promise<RelayParams>;
+    relayTransaction(forwarder: string, tx: ExecuteTransaction): Promise<string>;
     getRpcUrl(): string;
     getToken(): string;
 }

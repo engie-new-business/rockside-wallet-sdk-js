@@ -1,5 +1,6 @@
 import { Wallet } from './wallet';
 import { Rockside } from './rockside';
+import { GasPrices } from './api';
 import { executeMessageHash } from './hash';
 
 const RpcEngine = require('json-rpc-engine');
@@ -46,10 +47,8 @@ export class Provider {
           const metatx = {
             relayer: tx.relayer,
             to: tx.to,
-            value: tx.value || 0,
             data: Buffer.from(tx.data.substring(2), 'hex'),
-            gas: tx.gas || 0,
-            gasPrice: tx.gasPrice || 0,
+            speed: GasPrices.FAST,
           };
 
           return await rockside.relayTransaction(wallet, identity, metatx);
